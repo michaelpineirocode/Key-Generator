@@ -41,6 +41,47 @@ def save_image(img, tag):
     # tag to differentiate key from keyway
     img.save("Pics/Outputs/" + COMM_ARGUMENTS["output"] + "(" + tag + ")" + ".png")
 
+def remove_holes(pix, x, y):
+    streak_size = 10
+    current_streak = 0
+    new_streak = 0
+    black = False
+    
+    for i in range(y):
+        for j in range(x):
+            pixel = pix[j, i][0]
+            if pixel == 255:
+                if black == True:
+                    current_streak += 1
+                    new_streak = 0
+                elif current_streak >= streak_size:
+                    pix[j, i] = (255, 255, 255)
+                    black = True
+                    new_streak += 1
+                else:
+                    black = True
+                    new_streak += 1
+            
+            else:
+                if black == False:
+                    current_streak += 1
+                    new_streak = 0
+                elif current_streak >= streak_size:
+                    pix[j, i] = (0, 0, 0)
+                    black = False
+                    new_streak += 1
+                else:
+                    black = False
+                    current_streak = 0
+                    new_streak += 1
+            
+            if new_streak > current_streak:
+                black = not black
+                new_streak = 0
+                current_streak = 0
+    return pix
+                
+
 def main(): # calls other functions and tracks time
     img = open_image(COMM_ARGUMENTS["k_input"])
     x = img.size[0]
@@ -48,6 +89,7 @@ def main(): # calls other functions and tracks time
     pix = img.load()
 
     pix = convert_to_bw(pix, x, y)
+    pix = remove_holes(pix, x, y)
     save_image(img, "KEY")
 
 if __name__ == "__main__":
