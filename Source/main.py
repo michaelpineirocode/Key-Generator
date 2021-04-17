@@ -13,7 +13,9 @@ COMM_ARGUMENTS = { # global dict of com. line arguments for easier reference
     "k_sensitivity": float(sys.argv[4]), # sensitivity value of key
     "kw_sensitivity": float(sys.argv[5]), # sensitivity value of keyway (how much darkness in photo)
     "k_hole_sensitivity": float(sys.argv[6]),
-    "kw_hole_sensitivity": float(sys.argv[7])           
+    "kw_hole_sensitivity": float(sys.argv[7]),
+    "gap_from_top": int(sys.argv[8]), # how many pixels down from the top   
+    "gap_size": int(sys.argv[9]) # the size that the gap should be     
                 }
 
 def open_image(input_):
@@ -46,7 +48,7 @@ def save_image(img, tag):
 def remove_holes(pix, x, y, sens):
     streak_size = COMM_ARGUMENTS[sens] # the minimum value of pixels in a row to be considered the new pattern
     current_streak = 0 # keeps track of the current streak size
-    current_streak_black = False # keeps track of whether the current streak size is black
+    current_streak_black = True # keeps track of whether the current streak size is black
     black = True # keeps track of whether the last pixel was black
     
     for i in range(y): # loops through each pixel
@@ -78,7 +80,7 @@ def remove_holes(pix, x, y, sens):
 def remove_gradient(pix, x, y, sens): #goes vertically to remove excess gradients
     streak_size = COMM_ARGUMENTS[sens] # the minimum value of pixels in a row to be considered the new pattern
     current_streak = 0 # keeps track of the current streak size
-    current_streak_black = False # keeps track of whether the current streak size is black
+    current_streak_black = True # keeps track of whether the current streak size is black
     black = True # keeps track of whether the last pixel was black
     
     for i in range(x): # loops through each pixel
@@ -107,6 +109,18 @@ def remove_gradient(pix, x, y, sens): #goes vertically to remove excess gradient
                 
     return pix
          
+def create_gap(pix, x, y):
+    # finds the upper left most white pixel
+    for i in range(y):
+        for j in range(x):
+            if pix[j, i] == (255, 255, 255):
+                top = (j, i)
+                break
+        if "top" in locals():
+            break
+    
+    return pix
+    
 
 def main(): # calls other functions and tracks time
     img = open_image(COMM_ARGUMENTS["k_input"])
@@ -117,6 +131,7 @@ def main(): # calls other functions and tracks time
     pix = convert_to_bw(pix, x, y)
     pix = remove_holes(pix, x, y, "k_hole_sensitivity")
     pix = remove_gradient(pix, x, y, "kw_hole_sensitivity")
+    pix = create_gap(pix, x, y)
     save_image(img, "KEY")
 
 if __name__ == "__main__":
