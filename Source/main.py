@@ -44,41 +44,34 @@ def save_image(img, tag):
 def remove_holes(pix, x, y):
     streak_size = 10
     current_streak = 0
-    new_streak = 0
+    current_streak_black = False
     black = False
     
     for i in range(y):
         for j in range(x):
             pixel = pix[j, i][0]
-            if pixel == 255:
-                if black == True:
-                    current_streak += 1
-                    new_streak = 0
-                elif current_streak >= streak_size:
-                    pix[j, i] = (255, 255, 255)
-                    black = True
-                    new_streak += 1
-                else:
-                    black = True
-                    new_streak += 1
-            
-            else:
-                if black == False:
-                    current_streak += 1
-                    new_streak = 0
-                elif current_streak >= streak_size:
-                    pix[j, i] = (0, 0, 0)
-                    black = False
-                    new_streak += 1
-                else:
-                    black = False
+            if pixel == 255: # if the pixel is white
+                if black: # if the last pixel was black
+                    black = False # is now white
                     current_streak = 0
-                    new_streak += 1
-            
-            if new_streak > current_streak:
-                black = not black
-                new_streak = 0
-                current_streak = 0
+                else:
+                    current_streak += 1
+                    if current_streak >= streak_size:
+                        current_streak_black = False
+            else:
+                if not black:
+                    black = True
+                    current_streak = 0
+                else:
+                    current_streak += 1
+                    if current_streak >= streak_size:
+                        current_streak_black = True
+            if current_streak_black: #if the current streak is "black"
+                pix[j, i] = (0, 0, 0)
+            else:
+                pix[j, i] = (255, 255, 255)
+
+                
     return pix
                 
 
