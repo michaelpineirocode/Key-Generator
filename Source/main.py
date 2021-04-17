@@ -1,6 +1,7 @@
 from PIL import Image
 import numpy as np
 from stl import stl, mesh
+import settings
 import sys
 import time
 import math
@@ -42,35 +43,34 @@ def save_image(img, tag):
     img.save("Pics/Outputs/" + COMM_ARGUMENTS["output"] + "(" + tag + ")" + ".png")
 
 def remove_holes(pix, x, y):
-    streak_size = 10
-    current_streak = 0
-    current_streak_black = False
-    black = False
+    streak_size = 10 # the minimum value of pixels in a row to be considered the new pattern
+    current_streak = 0 # keeps track of the current streak size
+    current_streak_black = False # keeps track of whether the current streak size is black
+    black = False # keeps track of whether the last pixel was black
     
-    for i in range(y):
+    for i in range(y): # loops through each pixel
         for j in range(x):
             pixel = pix[j, i][0]
-            if pixel == 255: # if the pixel is white
+            if pixel == 255: # if the current pixel is white
                 if black: # if the last pixel was black
                     black = False # is now white
-                    current_streak = 0
-                else:
+                    current_streak = 0 # since it changed, the new streak is 0
+                else: # if last pixel was black
                     current_streak += 1
-                    if current_streak >= streak_size:
+                    if current_streak >= streak_size: # test if a new streak exists
                         current_streak_black = False
-            else:
-                if not black:
-                    black = True
-                    current_streak = 0
-                else:
+            else: # if current pixel is black
+                if not black: # if last pixel was white
+                    black = True # change black to True
+                    current_streak = 0 # reset the current streak
+                else: # if last pixel was black
                     current_streak += 1
                     if current_streak >= streak_size:
                         current_streak_black = True
             if current_streak_black: #if the current streak is "black"
-                pix[j, i] = (0, 0, 0)
+                pix[j, i] = settings.Colors().BLACK
             else:
-                pix[j, i] = (255, 255, 255)
-
+                pix[j, i] = settings.Colors().WHITE
                 
     return pix
                 
