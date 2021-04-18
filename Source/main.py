@@ -15,7 +15,8 @@ COMM_ARGUMENTS = { # global dict of com. line arguments for easier reference
     "k_hole_sensitivity": float(sys.argv[6]),
     "kw_hole_sensitivity": float(sys.argv[7]),
     "gap_from_top": int(sys.argv[8]), # how many pixels down from the top   
-    "gap_size": int(sys.argv[9]) # the size that the gap should be     
+    "gap_size": int(sys.argv[9]), # the size that the gap should be   
+    "thickness": float(sys.argv[10])  
                 }
 
 def open_image(input_):
@@ -113,14 +114,28 @@ def create_gap(pix, x, y):
     # finds the upper left most white pixel
     for i in range(y):
         for j in range(x):
-            if pix[j, i] == (255, 255, 255):
+            if pix[j, i] == settings.Colors().WHITE:
                 top = (j, i)
                 break
         if "top" in locals():
             break
-    
+
+    for i in range(top[1]+COMM_ARGUMENTS["gap_from_top"], top[1]+COMM_ARGUMENTS["gap_from_top"]+COMM_ARGUMENTS["gap_size"]):
+        for j in range(x): # range(top[0] + COMM_ARGUMENTS["gap_from_top"] ,x)
+            pix[j, i] = settings.Colors().BLACK
     return pix
     
+def create_heightmap(pix, x, y):
+    heightmap = [[0 for i in range(y + 1)] for j in range(x + 1)] # this creates an empty 2D array of size x by y
+    for i in range(y):
+        for j in range(x):
+            pixel = pix[j, i][0]
+            if pixel == 0:
+                heightmap[j][i].append(0)
+            else:
+                heightmap[j][i].append(COMM_ARGUMENTS["thickness"])
+    return heightmap
+
 
 def main(): # calls other functions and tracks time
     img = open_image(COMM_ARGUMENTS["k_input"])
@@ -133,6 +148,8 @@ def main(): # calls other functions and tracks time
     pix = remove_gradient(pix, x, y, "kw_hole_sensitivity")
     pix = create_gap(pix, x, y)
     save_image(img, "KEY")
+    heightmap = create_heightmap(pix, x, y)
+    
 
 if __name__ == "__main__":
     main()
