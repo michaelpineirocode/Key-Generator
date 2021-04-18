@@ -145,15 +145,25 @@ def find_surfaces(heightmap):
     # need the number of white pixels to determine the size of the array
     num_white = 0
     for i in range(len(heightmap)):
-        for j in range(len(heightmap[i])):
+        for j in range(len(heightmap[0])):
             if heightmap > 0: # if the height is not 0, add to the running count
                 num_white += 1
     
     num_vertices = 4 * num_white # size of the surfaces array
     surfaces = np.zeros(num_vertices, dtype=mesh.Mesh.dtype) # surfaces numpy array
+    thickness = COMM_ARGUMENTS["thickness"]
+
+    vert_index = 0
+    for y in range(len(heightmap)):
+        for x in range(len(heightmap[0])):
+            if heightmap > 0:
+                # top section
+                surfaces, vert_index = change_vectors(surfaces, vert_index, [[x, y, thickness], [x, y+1, thickness], [x+1, y, thickness]]) #creates "first" triangle
+                surfaces, vert_index = change_vectors(surfaces, vert_index, [[x, y+1, thickness], [x+1, y+1, thickness], [x+1, y, thickness]]) # creates the second
+                # sides
 
 
-    
+                # bottom
 
 def main(): # calls other functions and tracks time
     img = open_image(COMM_ARGUMENTS["k_input"])
