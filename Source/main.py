@@ -136,6 +136,24 @@ def create_heightmap(pix, x, y):
                 heightmap[j][i].append(COMM_ARGUMENTS["thickness"])
     return heightmap
 
+def change_vectors(surfaces, vert_index, array_content):
+    surfaces["vectors"][vert_index] = np.array(array_content)
+    vert_index += 1
+    return surfaces, vert_index
+
+def find_surfaces(heightmap):
+    # need the number of white pixels to determine the size of the array
+    num_white = 0
+    for i in range(len(heightmap)):
+        for j in range(len(heightmap[i])):
+            if heightmap > 0: # if the height is not 0, add to the running count
+                num_white += 1
+    
+    num_vertices = 4 * num_white # size of the surfaces array
+    surfaces = np.zeros(num_vertices, dtype=mesh.Mesh.dtype) # surfaces numpy array
+
+
+    
 
 def main(): # calls other functions and tracks time
     img = open_image(COMM_ARGUMENTS["k_input"])
@@ -149,7 +167,7 @@ def main(): # calls other functions and tracks time
     pix = create_gap(pix, x, y)
     save_image(img, "KEY")
     heightmap = create_heightmap(pix, x, y)
-    
+
 
 if __name__ == "__main__":
     main()
