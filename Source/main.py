@@ -141,6 +141,12 @@ def change_vectors(surfaces, vert_index, array_content):
     vert_index += 1
     return surfaces, vert_index
 
+def check_sides(heightmap, x, y):
+    if heightmap[y][x-1] == 0 or heightmap[y][x+1] == 0 or heightmap[y-1][x] == 0 or heightmap[y+1][x] == 0:
+        return True
+    else:
+        return False
+
 def find_surfaces(heightmap):
     # need the number of white pixels to determine the size of the array
     num_white = 0
@@ -161,7 +167,8 @@ def find_surfaces(heightmap):
                 surfaces, vert_index = change_vectors(surfaces, vert_index, [[x, y, thickness], [x, y+1, thickness], [x+1, y, thickness]]) #creates "first" triangle
                 surfaces, vert_index = change_vectors(surfaces, vert_index, [[x, y+1, thickness], [x+1, y+1, thickness], [x+1, y, thickness]]) # creates the second
                 # sides
-
+                if check_sides(heightmap, x, y): # if the pixel is on an outside edge
+                    pass # this is where the logic for building/checking for places to build vertex goes
 
                 # bottom
 
