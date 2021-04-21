@@ -17,3 +17,6 @@ it will never need to create a vertice in that direction.
     [0, 0, 1, 1, 1, 0, 0, 0, 0]
     [0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
+
+Need to keep track if the last one and next one is exposed.
+If next one is exposed
