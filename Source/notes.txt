@@ -1,3 +1,19 @@
 For now the picture of the key will need to be taken as horizontally as possible.
 I have a few ideas on how to find the best place to put the "gap" but for now I will just make
 the aforementioned stipulation.
+
+
+I'm fairly certain that as the algorithm for finding vertices is running, it only needs to
+detect to the right and down. Since it is going row by row, if there is a white pixel to the left
+it will never need to create a vertice in that direction. 
+[
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    [1, 1, 1, 1, 1, 1, 0, 0, 0]
+    [1, 1, 1, 1, 1, 1, 1, 0, 0]
+    [1, 1, 1, 1, 1, 1, 1, 0, 0]
+    [1, 1, 1, 1, 1, 1, 1, 1, 0]
+    [1, 1, 1, 1, 1, 1, 1, 1, 0]
+    [1, 1, 1, 1, 1, 1, 1, 1, 0]
+    [0, 0, 1, 1, 1, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
