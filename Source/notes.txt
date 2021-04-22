@@ -18,5 +18,4 @@ it will never need to create a vertice in that direction.
     [0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
 
-Need to keep track if the last one and next one is exposed.
-If next one is exposed
+If a side is exposed, build a plane along that side
