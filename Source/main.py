@@ -131,9 +131,9 @@ def create_heightmap(pix, x, y):
         for j in range(x):
             pixel = pix[j, i][0]
             if pixel == 0:
-                heightmap[j][i].append(0)
+                heightmap[j][i] = 0
             else:
-                heightmap[j][i].append(COMM_ARGUMENTS["thickness"])
+                heightmap[j][i] = (COMM_ARGUMENTS["thickness"])
     return heightmap
 
 def change_vectors(surfaces, vert_index, array_content):
@@ -152,7 +152,7 @@ def find_surfaces(heightmap):
     num_white = 0
     for i in range(len(heightmap)):
         for j in range(len(heightmap[0])):
-            if heightmap > 0: # if the height is not 0, add to the running count
+            if heightmap[i][j] > 0: # if the height is not 0, add to the running count
                 num_white += 1
     
     num_vertices = 4 * num_white # size of the surfaces array
@@ -162,15 +162,23 @@ def find_surfaces(heightmap):
     vert_index = 0
     for y in range(len(heightmap)):
         for x in range(len(heightmap[0])):
-            if heightmap > 0:
+            if heightmap[y][x] > 0:
                 # top section
                 surfaces, vert_index = change_vectors(surfaces, vert_index, [[x, y, thickness], [x, y+1, thickness], [x+1, y, thickness]]) #creates "first" triangle
                 surfaces, vert_index = change_vectors(surfaces, vert_index, [[x, y+1, thickness], [x+1, y+1, thickness], [x+1, y, thickness]]) # creates the second
-                # sides
-                if check_sides(heightmap, x, y): # if the pixel is on an outside edge
-                    pass # this is where the logic for building/checking for places to build vertex goes
-
+            
                 # bottom
+                surfaces, vert_index = change_vectors(surfaces, vert_index, [[x, y, 0], [x, y+1, 0], [x+1, y, 0]]) #creates "first" triangle
+                surfaces, vert_index = change_vectors(surfaces, vert_index, [[x, y+1, 0], [x+1, y+1, 0], [x+1, y, 0]]) # creates the second
+                
+                # sides (this is the hard part)
+                if check_sides(heightmap, x, y): # if the pixel is on an outside edge
+                    #surfaces, vert_index = change_vectors(surfaces, vert_index, [[x+1, y, thickness], [x, y, thickness], [x, y, 0]]) #creates "first" triangle
+                    #surfaces, vert_index = change_vectors(surfaces, vert_index, [[x+1, y, 0], [x+1, y, thickness], [x, y, thickness]]) # creates the second
+                    pass
+
+    return surfaces
+
 
 def main(): # calls other functions and tracks time
     img = open_image(COMM_ARGUMENTS["k_input"])
@@ -184,6 +192,12 @@ def main(): # calls other functions and tracks time
     pix = create_gap(pix, x, y)
     save_image(img, "KEY")
     heightmap = create_heightmap(pix, x, y)
+    print(heightmap[int(len(heightmap) / 2)])
+    surfaces = find_surfaces(heightmap)
+    
+    stl_mesh = mesh.Mesh(surfaces, remove_empty_areas = False)
+    stl_mesh.normals
+    stl_mesh.save("STLS/" + COMM_ARGUMENTS["output"] + ".stl", mode=stl.Mode.ASCII)
 
 
 if __name__ == "__main__":
